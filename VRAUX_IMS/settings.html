@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Settings - VRAUX IMS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        /* Navigation Bar Styles */
+        .nav-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-250px);
+        }
+
+        .nav-toggle {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            z-index: 1001;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .nav-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .nav-toggle.shifted {
+            left: 270px;
+        }
+
+        .nav-header {
+            padding: 0 20px 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .nav-header h3 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+            color: #4facfe;
+        }
+
+        .nav-header p {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(79, 172, 254, 0.1);
+            border-left-color: #4facfe;
+            padding-left: 25px;
+        }
+
+        .nav-link.active {
+            background: rgba(79, 172, 254, 0.2);
+            border-left-color: #4facfe;
+            color: #4facfe;
+        }
+
+        .nav-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            text-align: center;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .content-wrapper.expanded {
+            margin-left: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-top: 80px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            
+            .sidebar.collapsed {
+                transform: translateX(-200px);
+            }
+            
+            .nav-toggle.shifted {
+                left: 220px;
+            }
+            
+            .content-wrapper {
+                margin-left: 200px;
+            }
+            
+            .container {
+                margin: 80px 10px 20px;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 22px;
+            border-bottom: 2px solid #4facfe;
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .success-message {
+            background: #28a745;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            max-width: 300px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: #28a745;
+        }
+        
+        .notification.error {
+            background: #dc3545;
+        }
+        
+        .notification.info {
+            background: #17a2b8;
+        }
+        
+        .notification h4 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        
+        .notification p {
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        .notification-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+        
+        .notification-close:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Toggle Button -->
+    <button class="nav-toggle shifted" id="navToggle" onclick="toggleNav()">&#9776;</button>
+    
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="nav-header">
+            <h3>IMS</h3>
+            <p>Inventory Management</p>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="stock.html" class="nav-link">
+                    <span class="nav-icon">&#128196;</span>
+                    Stock Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="customer.html" class="nav-link">
+                    <span class="nav-icon">&#128100;</span>
+                    Customer Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="billing.html" class="nav-link">
+                    <span class="nav-icon">&#128179;</span>
+                    Billing System
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">
+                    <span class="nav-icon">&#128194;</span>
+                    Reports
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link active">
+                    <span class="nav-icon">&#9881;</span>
+                    Settings
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <div class="content-wrapper" id="contentWrapper">
+        <div class="container">
+            <div class="header">
+                <h1 id="companyNameHeader">Company Settings</h1>
+            </div>
+
+        <div class="main-content">
+            <!-- Company Basic Details -->
+            <div class="section">
+                <h2>1st Company Basic Details</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="companyName">Company Name *</label>
+                        <input type="text" id="companyName" name="companyName" required placeholder="Enter company name" oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Contact Email *</label>
+                        <input type="email" id="contactEmail" name="contactEmail" required placeholder="Enter contact email" oninput="this.value = this.value.toLowerCase()">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="countrySelection">Country Selection *</label>
+                        <select id="countrySelection" name="countrySelection" required onchange="updateCurrency()">
+                            <option value="">Select Country</option>
+                            <option value="IN">India</option>
+                            <option value="US">United States</option>
+                            <option value="UK">United Kingdom</option>
+                            <option value="CA">Canada</option>
+                            <option value="AU">Australia</option>
+                            <option value="SG">Singapore</option>
+                            <option value="AE">UAE</option>
+                            <option value="SA">Saudi Arabia</option>
+                            <option value="MY">Malaysia</option>
+                            <option value="TH">Thailand</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="currency">Currency (Auto-selected)</label>
+                        <input type="text" id="currency" name="currency" readonly placeholder="Currency will be auto-selected">
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label for="address">Address *</label>
+                    <textarea id="address" name="address" required placeholder="Enter complete company address" oninput="this.value = this.value.toUpperCase()"></textarea>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button type="button" class="btn btn-primary" onclick="saveCompanySettings()">Save Company Settings</button>
+                </div>
+            </div>
+
+            <!-- Legal Details -->
+            <div class="section">
+                <h2>Legal Details</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="gstNumber">GST Number</label>
+                        <input type="text" id="gstNumber" name="gstNumber" placeholder="Enter GST number" maxlength="15" oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                    <div class="form-group">
+                        <label for="panNumber">PAN Number *</label>
+                        <input type="text" id="panNumber" name="panNumber" required placeholder="Enter PAN number" maxlength="10" oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="registrationNumber">Registration Number</label>
+                        <input type="text" id="registrationNumber" name="registrationNumber" placeholder="Enter registration number" oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                    <div class="form-group">
+                        <label for="tradeLicense">Trade License</label>
+                        <input type="text" id="tradeLicense" name="tradeLicense" placeholder="Enter trade license number" oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button type="button" class="btn btn-primary" onclick="saveLegalSettings()">Save Legal Settings</button>
+                </div>
+            </div>
+
+            <!-- Financial Configuration -->
+            <div class="section">
+                <h2>Financial Configuration</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="defaultAccountNumber">Default Account Number *</label>
+                        <input type="text" id="defaultAccountNumber" name="defaultAccountNumber" required placeholder="Enter default account number">
+                    </div>
+                    <div class="form-group">
+                        <label for="ifscCode">IFSC Code *</label>
+                        <input type="text" id="ifscCode" name="ifscCode" required placeholder="Enter IFSC code" oninput="this.value = this.value.toUpperCase()" onchange="fetchBankDetails()">
+                        <span id="ifscLoading" class="loading" style="display: none;"></span>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="bankName">Bank Name (Auto-fetched)</label>
+                        <input type="text" id="bankName" name="bankName" placeholder="Bank name will be auto-fetched" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="branchName">Branch Name *</label>
+                        <input type="text" id="branchName" name="branchName" required placeholder="Enter branch name" oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="upiId">UPI ID *</label>
+                        <input type="text" id="upiId" name="upiId" required placeholder="Enter UPI ID" oninput="this.value = this.value.toLowerCase()">
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentTerms">Payment Terms (days)</label>
+                        <input type="number" id="paymentTerms" name="paymentTerms" placeholder="Enter payment terms in days" min="0">
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button type="button" class="btn btn-primary" onclick="saveFinancialSettings()">Save Financial Settings</button>
+                </div>
+            </div>
+
+            <!-- Data Backup & Restore -->
+            <div class="section">
+                <h2>Data Backup & Restore</h2>
+                
+                <!-- Auto Backup Section -->
+                <div style="margin-bottom: 20px; padding: 15px; background: #e8f5e8; border-radius: 8px; border: 1px solid #4caf50;">
+                    <h3 style="margin: 0 0 10px 0; color: #2e7d32;">Auto Backup System</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" id="autoBackupToggle" onchange="toggleAutoBackup()" style="margin-right: 10px;">
+                                <span><strong>Enable Auto Backup (every 3 seconds)</strong></span>
+                            </label>
+                            <div id="autoBackupStatus" style="margin-top: 5px; font-size: 14px; color: #666;">
+                                Status: <span id="backupStatusText">Disabled</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <p><strong>Save Auto Backup:</strong> Download the continuously updated backup file.</p>
+                            <button type="button" class="btn btn-primary" id="saveAutoBackupBtn" onclick="saveAutoBackup()" disabled>Save Auto Backup</button>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 13px; color: #666;">
+                        <strong>Note:</strong> Auto backup runs continuously when enabled and saves the latest data to memory. 
+                        Click "Save Auto Backup" to download the current backup data as a file.
+                    </div>
+                </div>
+                
+                <!-- Restore Section -->
+                <div class="form-grid">
+                    <div class="form-group">
+                        <p><strong>Restore Data:</strong> Restore data from a previously created backup file.</p>
+                        <input type="file" id="restoreFile" accept=".json" style="display: none;" onchange="handleRestoreFile(event)">
+                        <button type="button" class="btn btn-warning" onclick="document.getElementById('restoreFile').click()">Choose Backup File</button>
+                        <button type="button" class="btn btn-danger" onclick="restoreData()" style="margin-left: 10px;">Restore Data</button>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; padding: 10px; background: #f0f0f0; border-radius: 5px;">
+                    <p style="margin: 0; font-size: 14px; color: #666;">
+                        <strong>Important:</strong> 
+                        <br>1. Backup files contain all your business data. Store them securely.
+                        <br>2. Please save backup files in the "backup" folder within your VRAUX_IMS directory.
+                        <br>3. Restoring data will overwrite all existing data.
+                        <br>4. Create the "backup" folder if it doesn't exist in your VRAUX_IMS directory.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Popup -->
+    <div id="notification" class="notification">
+        <span class="notification-close" onclick="hideNotification()">&times;</span>
+        <h4 id="notificationTitle"></h4>
+        <p id="notificationMessage"></p>
+    </div>
+
+    <script>
+        // Mock bank data for IFSC lookup
+        const mockBankData = {
+            'SBIN': { bank: 'State Bank of India', branch: 'Main Branch' },
+            'ICIC': { bank: 'ICICI Bank', branch: 'Corporate Branch' },
+            'HDFC': { bank: 'HDFC Bank', branch: 'Retail Branch' },
+            'KOTAK': { bank: 'Kotak Mahindra Bank', branch: 'Urban Branch' },
+            'PNB': { bank: 'Punjab National Bank', branch: 'Commercial Branch' },
+            'UBIN': { bank: 'Union Bank of India', branch: 'Urban Branch' },
+            'KARB': { bank: 'Karnataka Bank', branch: 'Regional Branch' },
+            'CORP': { bank: 'Corporation Bank', branch: 'Corporate Branch' },
+            'AXIS': { bank: 'Axis Bank', branch: 'Retail Branch' },
+            'YESB': { bank: 'Yes Bank', branch: 'Digital Branch' },
+            'IDIB': { bank: 'Indian Bank', branch: 'Main Branch' }
+        };
+
+        // Currency mapping based on country
+        const currencyMap = {
+            'IN': '₹ (INR)',
+            'US': '$ (USD)',
+            'UK': '£ (GBP)',
+            'CA': 'C$ (CAD)',
+            'AU': 'A$ (AUD)',
+            'SG': 'S$ (SGD)',
+            'AE': 'د.إ (AED)',
+            'SA': 'ر.س (SAR)',
+            'MY': 'RM (MYR)',
+            'TH': '฿ (THB)'
+        };
+
+        // Update currency based on country selection
+        function updateCurrency() {
+            const country = document.getElementById('countrySelection').value;
+            const currencyField = document.getElementById('currency');
+            
+            if (country && currencyMap[country]) {
+                currencyField.value = currencyMap[country];
+            } else {
+                currencyField.value = '';
+            }
+        }
+
+        // Fetch bank details based on IFSC code
+        function fetchBankDetails() {
+            const ifscCode = document.getElementById('ifscCode').value.trim().toUpperCase();
+            const loading = document.getElementById('ifscLoading');
+            const bankNameField = document.getElementById('bankName');
+            
+            if (ifscCode.length >= 4) {
+                loading.style.display = 'inline-block';
+                
+                setTimeout(() => {
+                    const bankCode = ifscCode.substring(0, 4);
+                    const bankInfo = mockBankData[bankCode] || { 
+                        bank: 'Unknown Bank'
+                    };
+                    
+                    bankNameField.value = bankInfo.bank;
+                    loading.style.display = 'none';
+                }, 1000);
+            } else {
+                bankNameField.value = '';
+            }
+        }
+
+        // Save company settings
+        function saveCompanySettings() {
+            const companyName = document.getElementById('companyName').value;
+            const contactEmail = document.getElementById('contactEmail').value;
+            const countrySelection = document.getElementById('countrySelection').value;
+            const address = document.getElementById('address').value;
+            
+            if (!companyName || !contactEmail || !countrySelection || !address) {
+                showNotification('Please fill in all required fields!', 'error');
+                return;
+            }
+            
+            const settings = {
+                companyName,
+                contactEmail,
+                countrySelection,
+                address,
+                updatedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('companySettings', JSON.stringify(settings));
+            
+            // Update header with new company name
+            loadCompanyName();
+            
+            showNotification('Company settings saved successfully!', 'success');
+        }
+
+        // Save legal settings
+        function saveLegalSettings() {
+            const settings = {
+                gstNumber: document.getElementById('gstNumber').value.trim().toUpperCase(),
+                panNumber: document.getElementById('panNumber').value.trim().toUpperCase(),
+                registrationNumber: document.getElementById('registrationNumber').value.trim().toUpperCase(),
+                tradeLicense: document.getElementById('tradeLicense').value.trim().toUpperCase(),
+                savedAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('legalSettings', JSON.stringify(settings));
+            showNotification('Legal settings saved successfully!', 'success');
+        }
+
+        // Save financial settings
+        function saveFinancialSettings() {
+            const settings = {
+                gstNumber: document.getElementById('gstNumber').value.trim().toUpperCase(),
+                panNumber: document.getElementById('panNumber').value.trim().toUpperCase(),
+                registrationNumber: document.getElementById('registrationNumber').value.trim().toUpperCase(),
+                tradeLicense: document.getElementById('tradeLicense').value.trim().toUpperCase(),
+                defaultAccountNumber: document.getElementById('defaultAccountNumber').value.trim(),
+                ifscCode: document.getElementById('ifscCode').value.trim().toUpperCase(),
+                bankName: document.getElementById('bankName').value.trim(),
+                branchName: document.getElementById('branchName').value.trim().toUpperCase(),
+                upiId: document.getElementById('upiId').value.trim().toLowerCase(),
+                paymentTerms: document.getElementById('paymentTerms').value,
+                savedAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('financialSettings', JSON.stringify(settings));
+            showNotification('Financial settings saved successfully!', 'success');
+        }
+
+        // Show notification function
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const title = document.getElementById('notificationTitle');
+            const messageEl = document.getElementById('notificationMessage');
+            
+            // Set content based on type
+            if (type === 'success') {
+                notification.className = 'notification success';
+                title.textContent = 'Success!';
+            } else if (type === 'error') {
+                notification.className = 'notification error';
+                title.textContent = 'Error!';
+            } else if (type === 'info') {
+                notification.className = 'notification info';
+                title.textContent = 'Information!';
+            }
+            
+            messageEl.textContent = message;
+            
+            // Show notification
+            notification.classList.add('show');
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                hideNotification();
+            }, 3000);
+        }
+        
+        // Hide notification function
+        function hideNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.remove('show');
+        }
+
+        // Load saved settings on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load company settings
+            const companySettings = localStorage.getItem('companySettings');
+            if (companySettings) {
+                const settings = JSON.parse(companySettings);
+                document.getElementById('companyName').value = settings.companyName || '';
+                document.getElementById('contactEmail').value = settings.contactEmail || '';
+                document.getElementById('countrySelection').value = settings.country || '';
+                document.getElementById('currency').value = settings.currency || '';
+                updateCurrency();
+                document.getElementById('address').value = settings.address || '';
+            }
+
+            // Load legal settings
+            const legalSettings = localStorage.getItem('legalSettings');
+            if (legalSettings) {
+                const settings = JSON.parse(legalSettings);
+                document.getElementById('gstNumber').value = settings.gstNumber || '';
+                document.getElementById('panNumber').value = settings.panNumber || '';
+                document.getElementById('registrationNumber').value = settings.registrationNumber || '';
+                document.getElementById('tradeLicense').value = settings.tradeLicense || '';
+            }
+
+            // Load financial settings
+            const financialSettings = localStorage.getItem('financialSettings');
+            if (financialSettings) {
+                const settings = JSON.parse(financialSettings);
+                document.getElementById('defaultAccountNumber').value = settings.defaultAccountNumber || '';
+                document.getElementById('ifscCode').value = settings.ifscCode || '';
+                document.getElementById('bankName').value = settings.bankName || '';
+                document.getElementById('branchName').value = settings.branchName || '';
+                document.getElementById('upiId').value = settings.upiId || '';
+                document.getElementById('paymentTerms').value = settings.paymentTerms || '';
+                
+                // Trigger bank details fetch if IFSC exists
+                if (settings.ifscCode) {
+                    fetchBankDetails();
+                }
+            }
+        });
+
+        // Navigation Toggle Function
+        function toggleNav() {
+            const sidebar = document.getElementById('sidebar');
+            const contentWrapper = document.getElementById('contentWrapper');
+            const navToggle = document.getElementById('navToggle');
+            
+            sidebar.classList.toggle('collapsed');
+            contentWrapper.classList.toggle('expanded');
+            navToggle.classList.toggle('shifted');
+        }
+
+        // Load company name from settings
+        function loadCompanyName() {
+            const companySettings = localStorage.getItem('companySettings');
+            const companyNameHeader = document.getElementById('companyNameHeader');
+            
+            if (companySettings) {
+                const settings = JSON.parse(companySettings);
+                const companyName = settings.companyName || 'Company Settings';
+                companyNameHeader.textContent = companyName + ' - Company Settings';
+            } else {
+                companyNameHeader.textContent = 'Company Settings';
+            }
+        }
+
+        
+        // Handle Restore File Selection
+        function handleRestoreFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const backupData = JSON.parse(e.target.result);
+                        // Store the backup data temporarily for restore
+                        sessionStorage.setItem('tempBackupData', e.target.result);
+                        showNotification('Backup file loaded. Click "Restore Data" to complete restoration.', 'info');
+                    } catch (error) {
+                        console.error('Invalid backup file:', error);
+                        showNotification('Invalid backup file. Please select a valid backup file.', 'error');
+                        event.target.value = ''; // Clear the file input
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // Restore Data Function
+        function restoreData() {
+            const tempBackupData = sessionStorage.getItem('tempBackupData');
+            
+            if (!tempBackupData) {
+                showNotification('Please select a backup file first.', 'error');
+                return;
+            }
+
+            if (confirm('Are you sure you want to restore data? This will overwrite all existing data.')) {
+                try {
+                    const backupData = JSON.parse(tempBackupData);
+                    
+                    // Validate backup data structure
+                    if (!backupData.data) {
+                        throw new Error('Invalid backup structure');
+                    }
+
+                    // Restore all data to localStorage
+                    if (backupData.data.stockItems) {
+                        localStorage.setItem('stockItems', backupData.data.stockItems);
+                    }
+                    if (backupData.data.customers) {
+                        localStorage.setItem('customers', backupData.data.customers);
+                    }
+                    if (backupData.data.bills) {
+                        localStorage.setItem('bills', backupData.data.bills);
+                    }
+                    if (backupData.data.companySettings) {
+                        localStorage.setItem('companySettings', backupData.data.companySettings);
+                    }
+                    if (backupData.data.legalSettings) {
+                        localStorage.setItem('legalSettings', backupData.data.legalSettings);
+                    }
+                    if (backupData.data.financialSettings) {
+                        localStorage.setItem('financialSettings', backupData.data.financialSettings);
+                    }
+
+                    // Clear temporary backup data
+                    sessionStorage.removeItem('tempBackupData');
+                    
+                    // Clear file input
+                    document.getElementById('restoreFile').value = '';
+                    
+                    // Reload the page to reflect restored data
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                    
+                    showNotification('Data restored successfully! Page will reload...', 'success');
+                } catch (error) {
+                    console.error('Restore error:', error);
+                    showNotification('Failed to restore data. Please check the backup file.', 'error');
+                }
+            }
+        }
+
+        // Auto Backup Variables
+        let autoBackupInterval = null;
+        let autoBackupEnabled = false;
+
+        // Toggle Auto Backup
+        function toggleAutoBackup() {
+            const toggle = document.getElementById('autoBackupToggle');
+            const statusText = document.getElementById('backupStatusText');
+            const saveButton = document.getElementById('saveAutoBackupBtn');
+            
+            if (toggle.checked) {
+                startAutoBackup();
+                statusText.textContent = 'Active (updating every 3 seconds)';
+                statusText.style.color = '#2e7d32';
+                saveButton.disabled = false;
+                saveButton.style.opacity = '1';
+                saveButton.style.cursor = 'pointer';
+                showNotification('Auto backup enabled! Data will be updated every 3 seconds.', 'success');
+            } else {
+                stopAutoBackup();
+                statusText.textContent = 'Disabled';
+                statusText.style.color = '#666';
+                saveButton.disabled = true;
+                saveButton.style.opacity = '0.5';
+                saveButton.style.cursor = 'not-allowed';
+                showNotification('Auto backup disabled.', 'info');
+            }
+        }
+
+        // Start Auto Backup
+        function startAutoBackup() {
+            autoBackupEnabled = true;
+            updateAutoBackup(); // Update immediately
+            autoBackupInterval = setInterval(updateAutoBackup, 3000); // Update every 3 seconds
+        }
+
+        // Stop Auto Backup
+        function stopAutoBackup() {
+            autoBackupEnabled = false;
+            if (autoBackupInterval) {
+                clearInterval(autoBackupInterval);
+                autoBackupInterval = null;
+            }
+        }
+
+        // Update Auto Backup Data
+        function updateAutoBackup() {
+            if (!autoBackupEnabled) return;
+            
+            try {
+                // Collect all data from localStorage
+                const backupData = {
+                    timestamp: new Date().toISOString(),
+                    version: '1.0',
+                    autoBackup: true,
+                    data: {
+                        stockItems: localStorage.getItem('stockItems') || '[]',
+                        customers: localStorage.getItem('customers') || '[]',
+                        bills: localStorage.getItem('bills') || '[]',
+                        companySettings: localStorage.getItem('companySettings') || '{}',
+                        legalSettings: localStorage.getItem('legalSettings') || '{}',
+                        financialSettings: localStorage.getItem('financialSettings') || '{}'
+                    }
+                };
+
+                // Store in sessionStorage for auto backup
+                sessionStorage.setItem('autoBackupData', JSON.stringify(backupData));
+                
+                // Update last backup time
+                const lastBackupTime = new Date().toLocaleTimeString();
+                const statusText = document.getElementById('backupStatusText');
+                if (statusText) {
+                    statusText.textContent = `Active (last update: ${lastBackupTime})`;
+                }
+                
+            } catch (error) {
+                console.error('Auto backup error:', error);
+            }
+        }
+
+        // Save Auto Backup
+        function saveAutoBackup() {
+            const autoBackupData = sessionStorage.getItem('autoBackupData');
+            
+            if (!autoBackupData) {
+                showNotification('No auto backup data available. Please enable auto backup first.', 'error');
+                return;
+            }
+
+            try {
+                const backupData = JSON.parse(autoBackupData);
+                
+                // Create blob and download
+                const dataStr = JSON.stringify(backupData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                
+                // Create download link with date and time
+                const now = new Date();
+                const date = now.toISOString().split('T')[0];
+                const time = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `auto_backup_vraux_ims_${date}_${time}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Clean up
+                URL.revokeObjectURL(url);
+                
+                showNotification('Auto backup saved successfully! Please save the file in your VRAUX_IMS directory.', 'success');
+            } catch (error) {
+                console.error('Save auto backup error:', error);
+                showNotification('Failed to save auto backup. Please try again.', 'error');
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCompanyName();
+            
+            // Initialize save button state
+            const saveButton = document.getElementById('saveAutoBackupBtn');
+            saveButton.disabled = true;
+            saveButton.style.opacity = '0.5';
+            saveButton.style.cursor = 'not-allowed';
+            
+            // Check if auto backup was previously enabled
+            const autoBackupStatus = sessionStorage.getItem('autoBackupEnabled');
+            if (autoBackupStatus === 'true') {
+                document.getElementById('autoBackupToggle').checked = true;
+                toggleAutoBackup();
+            }
+        });
+
+        // Save auto backup state before page unload
+        window.addEventListener('beforeunload', function() {
+            sessionStorage.setItem('autoBackupEnabled', autoBackupEnabled.toString());
+        });
+    </script>
+</div> <!-- Close content-wrapper -->
+</div> <!-- Close container -->
+
+<!-- Footer -->
+<footer style="text-align: center; padding: 20px; color: white; font-size: 12px; margin-top: 20px;">
+    <p>Powered by VRAUX Technologies</p>
+</footer>
+
+</body>
+</html>

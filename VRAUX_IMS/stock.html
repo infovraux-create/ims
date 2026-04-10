@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Management System - VRAUX IMS</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        /* Navigation Bar Styles */
+        .nav-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-250px);
+        }
+
+        .nav-toggle {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            z-index: 1001;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .nav-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .nav-toggle.shifted {
+            left: 270px;
+        }
+
+        .nav-header {
+            padding: 0 20px 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .nav-header h3 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+            color: #4facfe;
+        }
+
+        .nav-header p {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(79, 172, 254, 0.1);
+            border-left-color: #4facfe;
+            padding-left: 25px;
+        }
+
+        .nav-link.active {
+            background: rgba(79, 172, 254, 0.2);
+            border-left-color: #4facfe;
+            color: #4facfe;
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            text-align: center;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .content-wrapper.expanded {
+            margin-left: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-top: 80px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            
+            .sidebar.collapsed {
+                transform: translateX(-200px);
+            }
+            
+            .nav-toggle.shifted {
+                left: 220px;
+            }
+            
+            .content-wrapper {
+                margin-left: 200px;
+            }
+            
+            .container {
+                margin: 80px 10px 20px;
+            }
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .form-group input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        .table-section {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .table-section h2 {
+            padding: 20px;
+            background: #f8f9fa;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.success {
+            background: #28a745;
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        .notification.info {
+            background: #17a2b8;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .barcode-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .barcode-info {
+            margin: 15px 0;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .barcode-info strong {
+            color: #4facfe;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .btn-barcode {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+        }
+
+        .btn-barcode:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(238, 90, 36, 0.3);
+        }
+
+        .btn-bulk {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: 20px;
+        }
+
+        .btn-bulk:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(118, 75, 162, 0.3);
+        }
+
+        .bulk-barcode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .bulk-barcode-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            background: white;
+            break-inside: avoid;
+        }
+
+        .bulk-barcode-item h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .bulk-barcode-item .code {
+            font-weight: bold;
+            color: #4facfe;
+            margin-bottom: 10px;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .modal-content, .modal-content * {
+                visibility: visible;
+            }
+            .modal-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+            .modal-header {
+                display: none;
+            }
+            .modal-body {
+                padding: 10px;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .bulk-barcode-grid {
+                max-height: none;
+                overflow: visible;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+            }
+            .bulk-barcode-item {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .modal-content, .modal-content * {
+                visibility: visible;
+            }
+            .modal-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+            .modal-header {
+                display: none;
+            }
+            .modal-body {
+                padding: 20px;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .table-container {
+                overflow-x: scroll;
+            }
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            max-width: 300px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: #28a745;
+        }
+        
+        .notification.error {
+            background: #dc3545;
+        }
+        
+        .notification.info {
+            background: #17a2b8;
+        }
+        
+        .notification h4 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        
+        .notification p {
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        .notification-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+        
+        .notification-close:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Toggle Button -->
+    <button class="nav-toggle shifted" id="navToggle" onclick="toggleNav()">&#9776;</button>
+    
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="nav-header">
+            <h3>IMS</h3>
+            <p>Inventory Management</p>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="stock.html" class="nav-link active">
+                    <span class="nav-icon">&#128196;</span>
+                    Stock Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="customer.html" class="nav-link">
+                    <span class="nav-icon">&#128100;</span>
+                    Customer Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="billing.html" class="nav-link">
+                    <span class="nav-icon">&#128179;</span>
+                    Billing System
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">
+                    <span class="nav-icon">&#128194;</span>
+                    Reports
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <span class="nav-icon">&#9881;</span>
+                    Settings
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <div class="content-wrapper" id="contentWrapper">
+        <div class="container">
+            <div class="header">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                    <div>
+                        <h1 id="companyNameHeader">Stock Management</h1>
+                    </div>
+                    <button class="btn btn-bulk" onclick="generateBulkBarcodes()">Bulk Barcode Print</button>
+                </div>
+            </div>
+
+        <div class="main-content">
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalItems">0</h3>
+                    <p>Total Items</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalStock">0</h3>
+                    <p>Total Stock</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalValue">0</h3>
+                    <p>Total Value</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="lowStock">0</h3>
+                    <p>Low Stock Items</p>
+                </div>
+            </div>
+
+            <!-- Add/Edit Item Form -->
+            <div class="form-section">
+                <h2 id="formTitle">Add New Item</h2>
+                <form id="itemForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="itemCode">Item Code *</label>
+                            <input type="text" id="itemCode" name="itemCode" required placeholder="Enter item code">
+                        </div>
+                        <div class="form-group">
+                            <label for="itemName">Item Name *</label>
+                            <input type="text" id="itemName" name="itemName" required placeholder="Enter item name">
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Price *</label>
+                            <input type="number" id="price" name="price" step="0.01" min="0" required placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="stock">Stock Quantity *</label>
+                            <input type="number" id="stock" name="stock" min="0" required placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="gstPercent">GST % *</label>
+                            <input type="number" id="gstPercent" name="gstPercent" step="0.01" min="0" max="100" required placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <input type="text" id="category" name="category" placeholder="Enter category">
+                        </div>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Add Item</button>
+                        <button type="button" class="btn btn-secondary" id="cancelBtn" style="display: none;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Stock Table -->
+            <div class="table-section">
+                <h2>Stock Inventory</h2>
+                <div class="table-container">
+                    <table id="stockTable">
+                        <thead>
+                            <tr>
+                                <th>Item Code</th>
+                                <th>Item Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>GST %</th>
+                                <th>Total Value</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stockTableBody">
+                            <!-- Items will be populated here -->
+                        </tbody>
+                    </table>
+                    <div id="emptyState" class="empty-state">
+                        <p>No items in inventory. Add your first item above!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barcode Modal -->
+    <div id="barcodeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Generate Barcode</h2>
+                <span class="close" onclick="closeBarcodeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="barcode-info">
+                    <strong>Item Name:</strong> <span id="barcodeItemName"></span>
+                </div>
+                <div class="barcode-container">
+                    <svg id="barcode"></svg>
+                </div>
+                <div class="actions no-print">
+                    <button class="btn btn-primary" onclick="printBarcode()">Print Barcode</button>
+                    <button class="btn btn-secondary" onclick="closeBarcodeModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Barcode Modal -->
+    <div id="bulkBarcodeModal" class="modal">
+        <div class="modal-content" style="max-width: 90%; max-height: 90vh;">
+            <div class="modal-header">
+                <h2>Bulk Barcode Generation - All Items</h2>
+                <span class="close" onclick="closeBulkBarcodeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="bulkBarcodeContainer" class="bulk-barcode-grid">
+                    <!-- Barcodes will be generated here -->
+                </div>
+                <div class="actions no-print" style="margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="printBulkBarcodes()">Print All Barcodes</button>
+                    <button class="btn btn-secondary" onclick="closeBulkBarcodeModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Management
+        let stockItems = JSON.parse(localStorage.getItem('stockItems')) || [];
+        let editingIndex = -1;
+
+        // Load company name from settings
+        function loadCompanyName() {
+            const companySettings = localStorage.getItem('companySettings');
+            const companyNameHeader = document.getElementById('companyNameHeader');
+            
+            if (companySettings) {
+                const settings = JSON.parse(companySettings);
+                const companyName = settings.companyName || 'Stock Management';
+                companyNameHeader.textContent = companyName + ' - Stock Management';
+            } else {
+                companyNameHeader.textContent = 'Stock Management';
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCompanyName();
+            renderTable();
+            updateStats();
+            
+            // Add uppercase conversion for item code and item name
+            document.getElementById('itemCode').addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+            
+            document.getElementById('itemName').addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+        });
+
+        // Show notification function
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const title = document.getElementById('notificationTitle');
+            const messageEl = document.getElementById('notificationMessage');
+            
+            // Set content based on type
+            if (type === 'success') {
+                notification.className = 'notification success';
+                title.textContent = 'Success!';
+            } else if (type === 'error') {
+                notification.className = 'notification error';
+                title.textContent = 'Error!';
+            } else if (type === 'info') {
+                notification.className = 'notification info';
+                title.textContent = 'Information!';
+            }
+            
+            messageEl.textContent = message;
+            
+            // Show notification
+            notification.classList.add('show');
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                hideNotification();
+            }, 3000);
+        }
+        
+        // Hide notification function
+        function hideNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.remove('show');
+        }
+
+        // Form Submission
+        document.getElementById('itemForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                itemCode: document.getElementById('itemCode').value.trim(),
+                itemName: document.getElementById('itemName').value.trim(),
+                price: parseFloat(document.getElementById('price').value),
+                stock: parseInt(document.getElementById('stock').value),
+                gstPercent: parseFloat(document.getElementById('gstPercent').value),
+                category: document.getElementById('category').value.trim() || 'General'
+            };
+
+            // Check for duplicate item code (except when editing)
+            const existingIndex = stockItems.findIndex(item => item.itemCode === formData.itemCode);
+            if (existingIndex !== -1 && existingIndex !== editingIndex) {
+                showNotification('Item code already exists!', 'error');
+                return;
+            }
+
+            if (editingIndex === -1) {
+                // Add new item
+                stockItems.push(formData);
+                showNotification('Item added successfully!', 'success');
+            } else {
+                // Update existing item
+                stockItems[editingIndex] = formData;
+                showNotification('Item updated successfully!', 'success');
+                resetForm();
+            }
+
+            saveData();
+            renderTable();
+            updateStats();
+            this.reset();
+        });
+
+        // Cancel Edit
+        document.getElementById('cancelBtn').addEventListener('click', resetForm);
+
+        // Render Table
+        function renderTable() {
+            const tbody = document.getElementById('stockTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (stockItems.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            tbody.innerHTML = stockItems.map((item, index) => `
+                <tr>
+                    <td><strong>${item.itemCode}</strong></td>
+                    <td>${item.itemName}</td>
+                    <td>${item.category}</td>
+                    <td>Rs. ${item.price.toFixed(2)}</td>
+                    <td>${item.stock}</td>
+                    <td>${item.gstPercent}%</td>
+                    <td>Rs. ${(item.price * item.stock).toFixed(2)}</td>
+                    <td>
+                        <div class="actions">
+                            <button class="btn btn-success btn-sm" onclick="editItem(${index})">Edit</button>
+                            <button class="btn btn-barcode btn-sm" onclick="generateBarcode(${index})">Barcode</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteItem(${index})">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Edit Item
+        function editItem(index) {
+            const item = stockItems[index];
+            editingIndex = index;
+            
+            document.getElementById('itemCode').value = item.itemCode;
+            document.getElementById('itemName').value = item.itemName;
+            document.getElementById('price').value = item.price;
+            document.getElementById('stock').value = item.stock;
+            document.getElementById('gstPercent').value = item.gstPercent;
+            document.getElementById('category').value = item.category;
+            
+            document.getElementById('formTitle').textContent = 'Edit Item';
+            document.getElementById('submitBtn').textContent = 'Update Item';
+            document.getElementById('cancelBtn').style.display = 'inline-block';
+            
+            showNotification(`Editing item: ${item.itemName}`, 'info');
+            
+            // Scroll to form
+            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Delete Item
+        function deleteItem(index) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                const itemName = stockItems[index].itemName;
+                stockItems.splice(index, 1);
+                saveData();
+                renderTable();
+                updateStats();
+                showNotification(`Item "${itemName}" deleted successfully!`, 'info');
+            }
+        }
+
+        // Reset Form
+        function resetForm() {
+            editingIndex = -1;
+            document.getElementById('itemForm').reset();
+            document.getElementById('formTitle').textContent = 'Add New Item';
+            document.getElementById('submitBtn').textContent = 'Add Item';
+            document.getElementById('cancelBtn').style.display = 'none';
+        }
+
+        // Update Statistics
+        function updateStats() {
+            const totalItems = stockItems.length;
+            const totalStock = stockItems.reduce((sum, item) => sum + item.stock, 0);
+            const totalValue = stockItems.reduce((sum, item) => sum + (item.price * item.stock), 0);
+            const lowStock = stockItems.filter(item => item.stock < 10).length;
+            
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('totalStock').textContent = totalStock;
+            document.getElementById('totalValue').textContent = `Rs. ${totalValue.toFixed(2)}`;
+            document.getElementById('lowStock').textContent = lowStock;
+        }
+
+        // Save Data to LocalStorage
+        function saveData() {
+            localStorage.setItem('stockItems', JSON.stringify(stockItems));
+        }
+
+        // Generate Barcode
+        function generateBarcode(index) {
+            const item = stockItems[index];
+            
+            // Update modal content
+            document.getElementById('barcodeItemName').textContent = item.itemName;
+            
+            // Generate barcode
+            try {
+                JsBarcode("#barcode", item.itemCode, {
+                    format: "CODE128",
+                    width: 2,
+                    height: 80,
+                    displayValue: true,
+                    fontSize: 14,
+                    margin: 10
+                });
+                
+                // Show modal
+                document.getElementById('barcodeModal').style.display = 'block';
+                
+                // Auto-focus on print button
+                setTimeout(() => {
+                    document.querySelector('.btn-primary').focus();
+                }, 100);
+                
+            } catch (error) {
+                showNotification('Error generating barcode: ' + error.message, 'error');
+            }
+        }
+
+        // Close Barcode Modal
+        function closeBarcodeModal() {
+            document.getElementById('barcodeModal').style.display = 'none';
+        }
+
+        // Print Barcode
+        function printBarcode() {
+            window.print();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const barcodeModal = document.getElementById('barcodeModal');
+            const bulkBarcodeModal = document.getElementById('bulkBarcodeModal');
+            
+            if (event.target == barcodeModal) {
+                closeBarcodeModal();
+            }
+            if (event.target == bulkBarcodeModal) {
+                closeBulkBarcodeModal();
+            }
+        }
+
+        // Generate Bulk Barcodes
+        function generateBulkBarcodes() {
+            if (stockItems.length === 0) {
+                showNotification('No items available for barcode generation!', 'error');
+                return;
+            }
+            
+            const container = document.getElementById('bulkBarcodeContainer');
+            container.innerHTML = '';
+            
+            // Generate barcode for each item
+            stockItems.forEach((item, index) => {
+                const barcodeItem = document.createElement('div');
+                barcodeItem.className = 'bulk-barcode-item';
+                barcodeItem.innerHTML = `
+                    <h4>${item.itemName}</h4>
+                    <svg id="bulk-barcode-${index}"></svg>
+                `;
+                container.appendChild(barcodeItem);
+                
+                // Generate barcode for this item
+                try {
+                    JsBarcode(`#bulk-barcode-${index}`, item.itemCode, {
+                        format: "CODE128",
+                        width: 1.5,
+                        height: 60,
+                        displayValue: true,
+                        fontSize: 12,
+                        margin: 5
+                    });
+                } catch (error) {
+                    console.error('Error generating barcode for item', item.itemCode, error);
+                }
+            });
+            
+            // Show modal
+            document.getElementById('bulkBarcodeModal').style.display = 'block';
+            
+            showNotification(`Generated ${stockItems.length} barcodes successfully!`, 'success');
+        }
+
+        // Close Bulk Barcode Modal
+        function closeBulkBarcodeModal() {
+            document.getElementById('bulkBarcodeModal').style.display = 'none';
+        }
+
+        // Print Bulk Barcodes
+        function printBulkBarcodes() {
+            window.print();
+        }
+
+        // Search Functionality (Bonus)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add search box
+            const searchBox = document.createElement('input');
+            searchBox.type = 'text';
+            searchBox.id = 'searchBox';
+            searchBox.placeholder = 'Search items...';
+            searchBox.style.cssText = 'width: 100%; padding: 10px; margin-bottom: 20px; border: 2px solid #e0e0e0; border-radius: 8px;';
+            
+            const tableSection = document.querySelector('.table-section');
+            const h2 = tableSection.querySelector('h2');
+            h2.insertAdjacentElement('afterend', searchBox);
+            
+            // Search functionality
+            searchBox.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#stockTableBody tr');
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        });
+
+        // Navigation Toggle Function
+        function toggleNav() {
+            const sidebar = document.getElementById('sidebar');
+            const contentWrapper = document.getElementById('contentWrapper');
+            const navToggle = document.getElementById('navToggle');
+            
+            sidebar.classList.toggle('collapsed');
+            contentWrapper.classList.toggle('expanded');
+            navToggle.classList.toggle('shifted');
+        }
+    </script>
+</div> <!-- Close content-wrapper -->
+</div> <!-- Close container -->
+
+<!-- Footer -->
+<footer style="text-align: center; padding: 20px; color: white; font-size: 12px; margin-top: 20px;">
+    <p>Powered by VRAUX Technologies</p>
+</footer>
+
+</body>
+    
+<!-- Notification Popup -->
+<div id="notification" class="notification">
+    <span class="notification-close" onclick="hideNotification()">&times;</span>
+    <h4 id="notificationTitle"></h4>
+    <p id="notificationMessage"></p>
+</div>
+</html>

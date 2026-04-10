@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VRAUX Installation System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .installer-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .description {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .features {
+            text-align: left;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .features h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .features ul {
+            list-style: none;
+        }
+
+        .features li {
+            padding: 5px 0;
+            color: #555;
+        }
+
+        .features li:before {
+            content: "â";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-install {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-install:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-cancel {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .btn-cancel:hover {
+            background: #dee2e6;
+        }
+
+        .progress {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status-message {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .success-message {
+            display: none;
+            color: #28a745;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .desktop-icon {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .desktop-icon button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .desktop-icon button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="installer-container">
+        <div class="logo">VRAUX</div>
+        <h1 class="title">Installation System</h1>
+        <p class="description">
+            Welcome to VRAUX Inventory Management System. This installer will set up all necessary HTML files and create a desktop shortcut for easy access.
+        </p>
+        
+        <div class="features">
+            <h3>System Features:</h3>
+            <ul>
+                <li>Authentication System</li>
+                <li>Billing Management</li>
+                <li>Customer Management</li>
+                <li>Login System</li>
+                <li>Reports Generation</li>
+                <li>Settings Configuration</li>
+                <li>Stock Management</li>
+                <li>Desktop Launcher</li>
+            </ul>
+        </div>
+
+        <div class="buttons">
+            <button class="btn btn-install" onclick="installVRAUX()">Install VRAUX</button>
+            <button class="btn btn-cancel" onclick="cancelInstallation()">Cancel</button>
+        </div>
+
+        <div class="progress" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="status-message" id="statusMessage">Installing...</div>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            â VRAUX has been successfully installed!
+        </div>
+
+        <div class="desktop-icon" id="desktopIcon">
+            <p>Desktop shortcut created successfully!</p>
+            <button onclick="launchVRAUX()">Launch VRAUX</button>
+        </div>
+    </div>
+
+    <script>
+        const htmlFiles = [
+            'authentication.html',
+            'billing.html', 
+            'customer.html',
+            'login.html',
+            'reports.html',
+            'settings.html',
+            'stock.html'
+        ];
+
+        let installationProgress = 0;
+        const totalFiles = htmlFiles.length;
+
+        async function installVRAUX() {
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const statusMessage = document.getElementById('statusMessage');
+            const successMessage = document.getElementById('successMessage');
+            const desktopIcon = document.getElementById('desktopIcon');
+            
+            progressContainer.style.display = 'block';
+            
+            for (const filename of htmlFiles) {
+                await simulateFileSave(filename);
+                installationProgress++;
+                const progressPercentage = (installationProgress / totalFiles) * 100;
+                progressFill.style.width = progressPercentage + '%';
+                statusMessage.textContent = 'Installing ' + filename + '... (' + installationProgress + '/' + totalFiles + ')';
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            statusMessage.textContent = 'Creating desktop shortcut...';
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            progressContainer.style.display = 'none';
+            successMessage.style.display = 'block';
+            desktopIcon.style.display = 'block';
+            
+            localStorage.setItem('vraux_installed', 'true');
+            localStorage.setItem('vraux_files', JSON.stringify(htmlFiles));
+            
+            createDesktopShortcut();
+        }
+
+        async function simulateFileSave(filename) {
+            localStorage.setItem('vraux_' + filename, 'installed');
+        }
+
+        function createDesktopShortcut() {
+            const shortcutData = {
+                name: 'VRAUX Inventory Management',
+                url: window.location.href.replace('install.html', 'login.html'),
+                icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0idXJsKCNncmFkaWVudDApIi8+Cjx0ZXh0IHg9IjE2IiB5PSIyMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+VlJBVVg8L3RleHQ+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50MCIgeDE9IjAiIHkxPSIwIiB4Mj0iMzIiIHkyPSIzMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNjY3ZWVhIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzc2NGJhMiIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPg=='
+            };
+            
+            localStorage.setItem('vraux_desktop_shortcut', JSON.stringify(shortcutData));
+        }
+
+        function cancelInstallation() {
+            if (confirm('Are you sure you want to cancel the VRAUX installation?')) {
+                window.close();
+            }
+        }
+
+        function launchVRAUX() {
+            window.open('login.html', '_blank');
+        }
+
+        window.onload = function() {
+            if (localStorage.getItem('vraux_installed') === 'true') {
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('desktopIcon').style.display = 'block';
+                document.querySelector('.buttons').style.display = 'none';
+                // Always open login.html when installer is opened after installation
+                window.open('login.html', '_blank');
+            }
+        };
+    </script>
+</body>
+</html>
